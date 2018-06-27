@@ -40,7 +40,21 @@ const getAvailableOrder = (access_key, secret_key) => {
 
 const getCurrentPrice = id => {
   return rq.get(`https://api.upbit.com/v1/ticker?markets=${id}`);
-}
+};
+
+const howMuchEarnedAssets = async (access_key, secret_key, id) => {
+  const currentPrice = JSON.parse(await getCurrentPrice(id))[0].trade_price;
+  const myAvgPrice = JSON.parse(await getAllAssets(access_key, secret_key))[1].avg_krw_buy_price;
+
+  console.log(`buy: ${myAvgPrice}, current: ${currentPrice} => ${((currentPrice / myAvgPrice) * 100 - 100).toFixed(2)} %`);
+  if (myAvgPrice < currentPrice) {
+    console.log('Will be rich!');
+  } else if (myAvgPrice === currentPrice) {
+    console.log('Same same...');
+  } else {
+    console.log('Will be poor!');
+  }
+};
 
 const keyFile = path.join(__dirname, '../key.json');
 fs.readFile(keyFile, (err, data) => {
@@ -50,22 +64,5 @@ fs.readFile(keyFile, (err, data) => {
   const access_key = keys.access_key,
         secret_key = keys.secret_key;
 
-  getCurrentPrice('KRW-EOS')
-    .then(data => {
-      const currentPrice = JSON.parse(data)[0].trade_price;
-      getAllAssets(access_key, secret_key)
-        .then(data => {
-          const myEos = JSON.parse(data)[1] || {};
-          console.log(`buy: ${myEos.avg_krw_buy_price}, current: ${currentPrice} => ${((currentPrice / myEos.avg_krw_buy_price) * 100 - 100).toFixed(2)} %`);
-          if (myEos.avg_krw_buy_price < currentPrice) {
-            console.log('Will be rich!');
-          } else if (myEos.avg_krw_buy_price === currentPrice) {
-            console.log('Same same...');
-          } else {
-            console.log('Will be poor!');
-          }
-        })
-        .catch(err => console.log(err));
-    })
-    .catch(err => console.log(err));
+  howMuchEarnedAssets(access_key, secret_key, 'KRW-EOS');
 });
