@@ -71,6 +71,20 @@ const howMuchEarnedAssets = async (access_key, secret_key, id) => {
   }
 };
 
+const order = params => {
+  const access_key = params.access_key;
+  const secret_key = params.secret_key;
+  const market = params.market;
+  const currency = market.split('-')[1] || '';
+  const side = params.side;
+  const price = JSON.parse(await getCurrentPrice(id))[0].trade_price;
+  const assets = JSON.parse(await getAllAssets(access_key, secret_key));
+  const krwAssets = assets.filter(v => v.currency === 'KRW').pop();
+  const coinAssets = assets.filter(v => v.currency === currency).pop();
+  const volume = side === 'bid' ? Math.floor(krwAssets.balance / price) : coinAssets.balance;
+  const ord_type = 'limit';
+};
+
 export {
   howMuchEarnedAssets
 };
