@@ -4,7 +4,7 @@
 
 # How to use
 
-- You must create the `key.json` file into the src directory.
+- You must create the `key.json` file into the root directory.
 
   - example
 
