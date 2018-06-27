@@ -44,12 +44,12 @@ const getCurrentPrice = id => {
 
 const howMuchEarnedAssets = async (access_key, secret_key, id) => {
   const currentPrice = JSON.parse(await getCurrentPrice(id))[0].trade_price;
-  const myAvgPrice = JSON.parse(await getAllAssets(access_key, secret_key))[1].avg_krw_buy_price;
+  const myAssets = JSON.parse(await getAllAssets(access_key, secret_key))[1];
 
-  console.log(`buy: ${myAvgPrice}, current: ${currentPrice} => ${((currentPrice / myAvgPrice) * 100 - 100).toFixed(2)} %`);
-  if (myAvgPrice < currentPrice) {
+  console.log(`currency: ${myAssets.currency}\n balance: ${myAssets.balance}, buy: ${myAssets.avg_krw_buy_price}, current: ${currentPrice} => ${((currentPrice / myAssets.avg_krw_buy_price) * 100 - 100).toFixed(2)} %`);
+  if (myAssets.avg_krw_buy_price < currentPrice) {
     console.log('Will be rich!');
-  } else if (myAvgPrice === currentPrice) {
+  } else if (myAssets.avg_krw_buy_price === currentPrice) {
     console.log('Same same...');
   } else {
     console.log('Will be poor!');
