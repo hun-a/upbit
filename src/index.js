@@ -38,7 +38,7 @@ const getAvailableOrder = (access_key, secret_key) => {
   return rq(options);
 };
 
-const getEosCurrentPrice = id => {
+const getCurrentPrice = id => {
   return rq.get(`https://api.upbit.com/v1/ticker?markets=${id}`);
 }
 
@@ -50,7 +50,7 @@ fs.readFile(keyFile, (err, data) => {
   const access_key = keys.access_key,
         secret_key = keys.secret_key;
 
-  getEosCurrentPrice('KRW-EOS')
+  getCurrentPrice('KRW-EOS')
     .then(data => {
       const currentPrice = JSON.parse(data)[0].trade_price;
       getAllAssets(access_key, secret_key)
