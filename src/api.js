@@ -51,20 +51,22 @@ const getCurrentPrice = id => {
 
 const howMuchEarnedAssets = async (access_key, secret_key, id) => {
   const currency = id.split('-')[1] || '';
-  const currentPrice = JSON.parse(await getCurrentPrice(id))[0].trade_price;
+  const currentPrice = JSON.parse(await getCurrentPrice(id))[0].trade_price || 0;
   const myAssets = JSON.parse(
     await getAllAssets(access_key, secret_key)
   ).filter(v => v.currency === currency)[0] || {};
-  const balance = myAssets.balance;
-  const avgPrice = myAssets.avg_krw_buy_price;
-  const rate = ((currentPrice / avgPrice) * 100 - 100).toFixed(2);
-  const principal = (balance * avgPrice).toFixed(0);
-  const totalKrw = (balance * currentPrice).toFixed(0);
+  const balance = myAssets.balance || 0;
+  const avgPrice = myAssets.avg_krw_buy_price || 0;
+  const rate = ((currentPrice / avgPrice) * 100 - 100).toFixed(2) || 0;
+  const principal = (balance * avgPrice).toFixed(0) || 0;
+  const totalKrw = (balance * currentPrice).toFixed(0) || 0;
 
   console.log(`currency: ${currency}\n balance: ${balance}, buy: ${avgPrice}, current: ${currentPrice} => ${rate} %\n KRW: ${principal} => ${totalKrw} WON`);
-  if (myAssets.avg_krw_buy_price < currentPrice) {
+  if (avgPrice === 0) {
+    console.log('No assets...');
+  } else if (avgPrice < currentPrice) {
     console.log('Will be rich!');
-  } else if (myAssets.avg_krw_buy_price === currentPrice) {
+  } else if (avgPrice === currentPrice) {
     console.log('Same same...');
   } else {
     console.log('Will be poor!');
