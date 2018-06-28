@@ -71,7 +71,7 @@ const howMuchEarnedAssets = async (access_key, secret_key, id) => {
   }
 };
 
-const order = params => {
+const order = async params => {
   const access_key = params.access_key;
   const secret_key = params.secret_key;
   const market = params.market;
