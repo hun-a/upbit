@@ -74,17 +74,32 @@ const howMuchEarnedAssets = async (access_key, secret_key, id) => {
 };
 
 const order = async params => {
-  const access_key = params.access_key;
-  const secret_key = params.secret_key;
-  const market = params.market;
+  const { access_key, secret_key, market, side } = params;
   const currency = market.split('-')[1] || '';
-  const side = params.side;
-  const price = JSON.parse(await getCurrentPrice(id))[0].trade_price;
+  const price = JSON.parse(await getCurrentPrice(market))[0].trade_price;
   const assets = JSON.parse(await getAllAssets(access_key, secret_key));
   const krwAssets = assets.filter(v => v.currency === 'KRW').pop();
   const coinAssets = assets.filter(v => v.currency === currency).pop();
   const volume = side === 'bid' ? Math.floor(krwAssets.balance / price) : coinAssets.balance;
   const ord_type = 'limit';
+
+  const body = {
+    market, side, volume, price, ord_type
+  };
+  const payload = {
+    access_key,
+    nonce: (new Date).getTime(),
+    query: queryEncode(body)
+  };
+  const token = sign(payload, secret_key);
+  const options = {
+    method: "POST",
+    url: "https://api.upbit.com/v1/orders",
+    headers: {Authorization: `Bearer ${token}`},
+    json: body
+  };
+
+  return rq(options);
 };
 
 export {
